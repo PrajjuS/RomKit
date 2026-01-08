@@ -1,0 +1,34 @@
+[project]
+name = "RomKit"
+version = "1.0.0"
+description = "Python Library for ROM Project Automation"
+authors = [
+    {name = "PrajjuS",email = "theprajjus@gmail.com"}
+]
+license = {text = "GPL-3.0"}
+readme = "README.md"
+homepage = "https://github.com/PrajjuS/RomKit"
+repository = "https://github.com/PrajjuS/RomKit"
+keywords = ["rom", "android", "telegram", "automation", "ota", "github-actions"]
+classifiers = [
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Communications :: Chat",
+]
+
+requires-python = ">=3.10"
+
+dependencies = [
+    "pytelegrambotapi (>=4.29.1,<5.0.0)",
+    "pygithub (>=2.8.1,<3.0.0)",
+    "jinja2 (>=3.1.6,<4.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
