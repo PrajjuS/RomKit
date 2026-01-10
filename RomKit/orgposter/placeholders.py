@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2025 PrajjuS <theprajjus@gmail.com>.
+# Copyright (c) 2026 PrajjuS <theprajjus@gmail.com>.
 #
 # This file is part of RomKit
 # (see http://github.com/PrajjuS/RomKit).
