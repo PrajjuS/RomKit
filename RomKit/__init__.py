@@ -18,6 +18,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __author__ = "PrajjuS"
 __license__ = "GPL-3.0"

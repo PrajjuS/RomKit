@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "RomKit"
-version = "1.0.0"
+version = "1.0.1"
 description = "Python Library for ROM Project Automation"
 authors = ["PrajjuS <theprajjus@gmail.com>"]
 readme = "README.md"
