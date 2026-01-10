@@ -47,10 +47,11 @@ class OrgPosterConfig:
         self.gh_token: Optional[str] = self.getConfig(
             "GH_TOKEN",
         ) or self.yaml.getConfig("gh_token")
-        self.chat_ids: List[str] = self.getConfig(
-            "CHAT_IDS",
-            return_type=list,
-        ) or self.yaml.getConfig("chat_ids", return_type=list, is_required=True)
+        self.chat_ids: List[str] = (
+            [id.strip() for id in chat_ids_env.split(",") if id.strip()]
+            if (chat_ids_env := self.getConfig("CHAT_IDS"))
+            else self.yaml.getConfig("chat_ids", return_type=list, is_required=True)
+        )
         self.priv_chat_id: Optional[str] = self.getConfig(
             "PRIV_CHAT_ID",
         ) or self.yaml.getConfig("priv_chat_id")
