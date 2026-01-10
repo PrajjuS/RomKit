@@ -63,7 +63,7 @@ class VersionChecker:
             values = {}
 
             for var in variables:
-                pattern = rf"{var}\s*=\s*(.+)"
+                pattern = rf"{var}\s*:?=\s*(.+)"
                 match = re.search(pattern, content)
                 if match:
                     values[var] = match.group(1).strip()
