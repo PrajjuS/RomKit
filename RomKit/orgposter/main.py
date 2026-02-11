@@ -183,7 +183,7 @@ class OrgPoster:
                 content=msg,
             )
 
-            text = f"*{self.config.rom_name} Devices (v{current_version}) Update Status*\n\n"
+            text = f"*{self.config.rom_name} Devices ({current_version}) Update Status*\n\n"
             text += f"*Total Official Devices:* `{len(all_devices)}`\n"
             text += f"*Updated during current month:* `{len(updated)}`\n"
             text += f"*Not Updated during current month:* `{len(not_updated)}`\n"
