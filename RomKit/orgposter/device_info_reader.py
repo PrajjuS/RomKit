@@ -19,6 +19,7 @@
 #
 
 import json
+import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -27,6 +28,8 @@ from github import Github
 from ..utils import extract_data
 from .json_reader import JSONReader
 from .placeholders import PlaceholderProcessor
+
+logger = logging.getLogger(__name__)
 
 
 class DeviceInfoReader:
@@ -68,7 +71,7 @@ class DeviceInfoReader:
         for source in self.device_info_sources:
             source_name = source.get("name")
             if not source_name:
-                print("Warning: Source missing 'name' field, skipping")
+                logger.warning("Source missing 'name' field, skipping")
                 continue
 
             try:
@@ -77,8 +80,8 @@ class DeviceInfoReader:
                 elif source["type"] == "local":
                     data = self._load_local_source(source)
                 else:
-                    print(
-                        f"Warning: Unknown source type '{source['type']}' for {source_name}",
+                    logger.warning(
+                        f"Unknown source type '{source['type']}' for {source_name}",
                     )
                     continue
 
@@ -103,10 +106,12 @@ class DeviceInfoReader:
                     "data": extracted_data,
                     "config": source,
                 }
-                print(f"Loaded {len(extracted_data)} items from source '{source_name}'")
+                logger.info(
+                    f"Loaded {len(extracted_data)} items from source '{source_name}'",
+                )
 
             except Exception as e:
-                print(f"Error loading source '{source_name}': {e}")
+                logger.error(f"Error loading source '{source_name}': {e}")
 
     def _load_github_source(self, source: Dict[str, Any]) -> Any:
         """

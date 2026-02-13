@@ -18,6 +18,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
+from . import logger as _
 from .message import MessageProcessor, extract_data
 from .telegram import TelegramPoster
 from .version import VersionChecker

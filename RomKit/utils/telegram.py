@@ -18,12 +18,15 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
+import logging
 from pathlib import Path
 from time import sleep
 from typing import Dict, List, Optional
 
 import telebot
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
+
+logger = logging.getLogger(__name__)
 
 
 class TelegramPoster:
@@ -101,9 +104,10 @@ class TelegramPoster:
                         disable_web_page_preview=True,
                     )
 
-                print(f"Posted to {chat_id}")
+                logger.info(f"Posted to {chat_id}")
                 sleep(delay)
             except Exception as e:
+                logger.error(f"Error posting to {chat_id}: {e}")
                 raise RuntimeError(f"Error posting to {chat_id}: {e}")
 
     def post_status(
@@ -135,6 +139,6 @@ class TelegramPoster:
                 disable_web_page_preview=True,
             )
 
-            print(f"Posted status to {chat_id}")
+            logger.info(f"Posted status to {chat_id}")
         except Exception as e:
-            print(f"Error posting status to {chat_id}: {e}")
+            logger.error(f"Error posting status to {chat_id}: {e}")

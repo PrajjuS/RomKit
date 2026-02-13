@@ -19,6 +19,7 @@
 #
 
 import datetime
+import logging
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -30,6 +31,8 @@ from .device_info_reader import DeviceInfoReader
 from .id_tracker import IDTracker
 from .json_reader import JSONReader
 from .placeholders import PlaceholderProcessor
+
+logger = logging.getLogger(__name__)
 
 
 class OrgPoster:
@@ -139,7 +142,7 @@ class OrgPoster:
         try:
             current_version = self.version_checker.get_version()
             if not current_version:
-                print("Unable to fetch current ROM version")
+                logger.warning("Unable to fetch current ROM version")
                 return
 
             all_devices = self.device_info_reader.get_all_devices()
@@ -204,22 +207,24 @@ class OrgPoster:
             )
 
         except Exception as e:
-            print(f"Error posting status message: {e}")
+            logger.error(f"Error posting status message: {e}")
 
     def run(self):
         """
         Main execution method - checks for updates and posts to Telegram
         """
-        print(f"RomKit OrgPoster - Checking for {self.config.rom_name} updates...\n")
+        logger.info(
+            f"RomKit OrgPoster - Checking for {self.config.rom_name} updates...",
+        )
 
         changed_ids = self.id_tracker.get_changed_ids()
 
         if not changed_ids:
-            print("No updates found. Nothing to do.")
+            logger.info("No updates found. Nothing to do.")
             self.post_status_message()
             return
 
-        print(f"Found {len(changed_ids)} update(s):\n")
+        logger.info(f"Found {len(changed_ids)} update(s)")
 
         updated_devices = []
         successfully_posted_ids = []
@@ -231,22 +236,24 @@ class OrgPoster:
             )
 
             if not device_info:
-                print(f"Warning: Could not find device info for ID: {id}")
+                logger.warning(f"Could not find device info for ID: {id}")
                 continue
 
             device_name = device_info.get(
                 self.config.device_name_field,
                 device_info.get("bot_codename", "Unknown"),
             )
-            print(f"Posting update for {device_name} ({device_info['bot_codename']})")
+            logger.info(
+                f"Posting update for {device_name} ({device_info['bot_codename']})",
+            )
 
             try:
                 self.post_update(device_info)
                 updated_devices.append(device_info)
                 successfully_posted_ids.append(id)
-                print(f"Successfully posted {device_info['bot_codename']}\n")
+                logger.info(f"Successfully posted {device_info['bot_codename']}")
             except Exception as e:
-                print(f"Error posting {device_info['bot_codename']}: {e}\n")
+                logger.error(f"Error posting {device_info['bot_codename']}: {e}")
 
         if successfully_posted_ids:
             current_ids = self.id_tracker.get_old_ids()
@@ -256,8 +263,8 @@ class OrgPoster:
         if updated_devices:
             commit_msg = self.generate_commit_message(updated_devices)
             Path("commit_mesg.txt").write_text(commit_msg)
-            print(f"Commit message saved to commit_mesg.txt")
+            logger.info("Commit message saved to commit_mesg.txt")
 
-        print(f"Updated {len(updated_devices)} device(s) successfully!")
+        logger.info(f"Updated {len(updated_devices)} device(s) successfully!")
 
         self.post_status_message()

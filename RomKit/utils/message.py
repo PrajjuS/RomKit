@@ -18,11 +18,14 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
+import logging
 import re
 from datetime import datetime
 from typing import Any, Dict, List, Tuple
 
 from jinja2 import Environment
+
+logger = logging.getLogger(__name__)
 
 
 def extract_data(data: Dict[str, Any], structure: Dict[str, Any]) -> Dict[str, Any]:
@@ -150,8 +153,8 @@ class MessageProcessor:
             template = self.env.from_string(self.message_template)
             message = template.render(data)
         except Exception as e:
-            print(f"Error rendering template: {e}")
-            message = self.message_template
+            logger.error(f"Error rendering template: {e}")
+            raise
 
         # Extract buttons and clean message
         buttons = self.extract_buttons(message)

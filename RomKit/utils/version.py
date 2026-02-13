@@ -18,10 +18,13 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
 
+import logging
 import re
 from typing import Optional
 
 from github import Github
+
+logger = logging.getLogger(__name__)
 
 
 class VersionChecker:
@@ -68,12 +71,12 @@ class VersionChecker:
                 if match:
                     values[var] = match.group(1).strip()
                 else:
-                    print(f"Warning: Variable '{var}' not found in {self.version_file}")
+                    logger.warning(f"Variable '{var}' not found in {self.version_file}")
                     values[var] = "UNKNOWN"
 
             version = self.version_template.format(**values)
             return version
 
         except Exception as e:
-            print(f"Error fetching ROM version: {e}")
+            logger.error(f"Error fetching ROM version: {e}")
             return None
