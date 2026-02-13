@@ -98,3 +98,57 @@ class OrgPosterConfig:
             "donation_list",
             return_type=list,
         )
+
+        self.device_info_sources: Optional[List[Dict[str, Any]]] = self.yaml.getConfig(
+            "device_info_sources",
+            return_type=list,
+        )
+
+        if self.device_info_sources:
+            self._validate_device_info_sources()
+
+    def _validate_device_info_sources(self):
+        """Validate device_info_sources configuration"""
+        for idx, source in enumerate(self.device_info_sources):
+            if not isinstance(source, dict):
+                raise ValueError(
+                    f"device_info_sources[{idx}] must be a dictionary",
+                )
+
+            if "name" not in source:
+                raise ValueError(
+                    f"device_info_sources[{idx}] missing required field 'name'",
+                )
+            if "type" not in source:
+                raise ValueError(
+                    f"device_info_sources[{idx}] missing required field 'type'",
+                )
+            if "lookup_field" not in source:
+                raise ValueError(
+                    f"device_info_sources[{idx}] missing required field 'lookup_field'",
+                )
+            if "structure" not in source:
+                raise ValueError(
+                    f"device_info_sources[{idx}] missing required field 'structure'",
+                )
+
+            source_type = source["type"]
+            if source_type == "github":
+                if "repo" not in source:
+                    raise ValueError(
+                        f"device_info_sources[{idx}] type 'github' requires 'repo' field",
+                    )
+                if "file" not in source:
+                    raise ValueError(
+                        f"device_info_sources[{idx}] type 'github' requires 'file' field",
+                    )
+            elif source_type == "local":
+                if "file" not in source:
+                    raise ValueError(
+                        f"device_info_sources[{idx}] type 'local' requires 'file' field",
+                    )
+            else:
+                raise ValueError(
+                    f"device_info_sources[{idx}] has invalid type '{source_type}' "
+                    f"(must be 'github' or 'local')",
+                )

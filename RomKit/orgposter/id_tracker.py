@@ -20,9 +20,10 @@
 
 import json
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from ..utils import extract_data
+from .device_info_reader import DeviceInfoReader
 from .json_reader import JSONReader
 
 
@@ -32,7 +33,7 @@ class IDTracker:
     def __init__(
         self,
         file_ids_path: str,
-        json_reader: JSONReader,
+        device_reader: Union[JSONReader, DeviceInfoReader],
         id_field: str,
         device_json_structure: Dict,
     ):
@@ -41,12 +42,12 @@ class IDTracker:
 
         Args:
             file_ids_path: Path to file storing tracked IDs
-            json_reader: JSONReader instance for file discovery
+            device_reader: DeviceInfoReader or JSONReader instance for file discovery
             id_field: Name of the ID field in JSON
             device_json_structure: JSON structure definition
         """
         self.file_ids_path = file_ids_path
-        self.json_reader = json_reader
+        self.json_reader = device_reader
         self.id_field = id_field
         self.device_json_structure = device_json_structure
 

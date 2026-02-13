@@ -26,6 +26,7 @@ from NoobStuffs.libtelegraph import TelegraphHelper
 
 from ..utils import MessageProcessor, TelegramPoster, VersionChecker
 from .config import OrgPosterConfig
+from .device_info_reader import DeviceInfoReader
 from .id_tracker import IDTracker
 from .json_reader import JSONReader
 from .placeholders import PlaceholderProcessor
@@ -52,15 +53,22 @@ class OrgPoster:
 
         self.message_processor = MessageProcessor(self.config.message_template)
 
-        self.json_reader = JSONReader(
+        json_reader = JSONReader(
             self.config.json_directories,
             self.config.device_json_structure,
             placeholder_processor,
         )
 
+        self.device_info_reader = DeviceInfoReader(
+            self.config.device_info_sources,
+            self.config.gh_token,
+            json_reader,
+            placeholder_processor,
+        )
+
         self.id_tracker = IDTracker(
             self.config.file_ids_path,
-            self.json_reader,
+            self.device_info_reader,
             self.config.id_field,
             self.config.device_json_structure,
         )
@@ -134,7 +142,7 @@ class OrgPoster:
                 print("Unable to fetch current ROM version")
                 return
 
-            all_devices = self.json_reader.get_all_devices()
+            all_devices = self.device_info_reader.get_all_devices()
 
             updated = []
             not_updated = []
@@ -217,7 +225,10 @@ class OrgPoster:
         successfully_posted_ids = []
 
         for id in changed_ids:
-            device_info = self.json_reader.get_device_info(self.config.id_field, id)
+            device_info = self.device_info_reader.get_device_info(
+                self.config.id_field,
+                id,
+            )
 
             if not device_info:
                 print(f"Warning: Could not find device info for ID: {id}")
