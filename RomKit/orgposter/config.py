@@ -88,8 +88,12 @@ class OrgPosterConfig:
             "device_name_field",
             is_required=True,
         )
-        self.maintainer_field: str = self.yaml.getConfig(
-            "maintainer_field",
+
+        self.maintainer_name_field: Optional[str] = self.yaml.getConfig(
+            "maintainer_name_field",
+        )
+        self.maintainer_telegram_field: str = self.yaml.getConfig(
+            "maintainer_telegram_field",
             is_required=True,
         )
 

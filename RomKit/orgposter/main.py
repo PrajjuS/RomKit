@@ -99,6 +99,49 @@ class OrgPoster:
                 domain="graph.org",
             )
 
+    def _normalize_telegram_username(self, username: str) -> str:
+        """
+        Normalize telegram username to clean format without @ or domain
+
+        Args:
+            username: Username in format 'user', '@user', 't.me/user', or 'https://t.me/user' or 'https://telegram.me/user'
+
+        Returns:
+            Clean username without @ or domain
+        """
+        username = username.strip().lstrip("@")
+
+        for domain in ("t.me/", "telegram.me/"):
+            if domain in username:
+                username = username.split(domain, 1)[-1]
+                break
+
+        return username.rstrip("/")
+
+    def _format_maintainer_display(self, device: Dict[str, Any]) -> str:
+        """
+        Format maintainer display with smart name + telegram link
+
+        Args:
+            device: Device information dictionary
+
+        Returns:
+            HTML formatted maintainer display string
+        """
+        telegram_raw = device.get(self.config.maintainer_telegram_field, "")
+        telegram = self._normalize_telegram_username(telegram_raw)
+
+        name = None
+        if self.config.maintainer_name_field:
+            name = device.get(self.config.maintainer_name_field)
+
+        if telegram and name:
+            return f"<a href='https://t.me/{telegram}'>{name}</a>"
+        elif telegram:
+            return f"<a href='https://t.me/{telegram}'>{telegram}</a>"
+        else:
+            return "Unknown"
+
     def post_update(self, device_info: Dict[str, Any]):
         """
         Post update to Telegram channels
@@ -167,8 +210,8 @@ class OrgPoster:
             else:
                 for i, device in enumerate(updated, 1):
                     device_name = device.get(self.config.device_name_field, "Unknown")
-                    maintainer = device.get(self.config.maintainer_field, "Unknown")
-                    msg += f"<br><b>{i}.</b> <code>{device_name} ({device['bot_codename']})</code> <b>-</b> <a href='https://t.me/{maintainer}'>{maintainer}</a>"
+                    maintainer = self._format_maintainer_display(device)
+                    msg += f"<br><b>{i}.</b> <code>{device_name} ({device['bot_codename']})</code> <b>-</b> {maintainer}"
 
             msg += "<br><br>"
             msg += f"<b>The following devices have not been updated to the version</b> <code>{current_version}</code> <b>in the current month:</b> "
@@ -178,8 +221,8 @@ class OrgPoster:
             else:
                 for i, device in enumerate(not_updated, 1):
                     device_name = device.get(self.config.device_name_field, "Unknown")
-                    maintainer = device.get(self.config.maintainer_field, "Unknown")
-                    msg += f"<br><b>{i}.</b> <code>{device_name} ({device['bot_codename']})</code> <b>-</b> <a href='https://t.me/{maintainer}'>{maintainer}</a>"
+                    maintainer = self._format_maintainer_display(device)
+                    msg += f"<br><b>{i}.</b> <code>{device_name} ({device['bot_codename']})</code> <b>-</b> {maintainer}"
 
             msg += "<br><br>"
             msg += f"<b>Total Official Devices:</b> <code>{len(all_devices)}</code><br>"
@@ -205,6 +248,7 @@ class OrgPoster:
                 text,
                 telegraph_url["url"],
             )
+            logger.info(f"Posted status to {self.config.priv_chat_id}")
 
         except Exception as e:
             logger.error(f"Error posting status message: {e}")
